@@ -1,4 +1,10 @@
+import 'dart:developer';
+import 'dart:math';
+
 import 'package:flutter/material.dart';
+import 'package:hive_flutter/hive_flutter.dart';
+import 'package:todo_app/core/app_routes.dart';
+import 'package:todo_app/data/model/user_model.dart';
 
 class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key});
@@ -29,7 +35,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
             SizedBox(height: 20),
             Text(
               "Create Your Profile",
-              style: TextStyle(fontSize: 20, fontWeight: .bold),
+              style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
             ),
             SizedBox(height: 20),
             CustomTextFormField(
@@ -44,7 +50,20 @@ class _ProfileScreenState extends State<ProfileScreen> {
             ),
             SizedBox(height: 50),
             MaterialButton(
-              onPressed: () {},
+              onPressed: () async {
+                _showLoading();
+                var usrBox = Hive.box<UserModel>('User');
+                await usrBox
+                    .put("UserKey", UserModel(fullName: fullName.text))
+                    .then((Value) {
+                      Navigator.of(context).pop();
+                      Navigator.of(context).pushNamed(AppRoutes.home);
+                    })
+                    .catchError((error) {
+                      Navigator.of(context).pop();
+                      _showMyError(error);
+                    });
+              },
               color: Color(0xff3F51B5),
               padding: EdgeInsets.all(10),
               minWidth: 300,
@@ -55,7 +74,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 "Create",
                 style: TextStyle(
                   fontSize: 20,
-                  fontWeight: .bold,
+                  fontWeight: FontWeight.bold,
                   color: Colors.white,
                 ),
               ),
@@ -63,6 +82,58 @@ class _ProfileScreenState extends State<ProfileScreen> {
           ],
         ),
       ),
+    );
+  }
+
+  Future<void> _showLoading() async {
+    return showDialog(
+      context: context,
+      barrierDismissible: false, // user must tap button!
+      builder: (BuildContext context) {
+        return AlertDialog(
+          content: Row(
+            spacing: 20,
+            children: [
+              CircularProgressIndicator(),
+              Text(
+                "Loading...",
+                style: TextStyle(fontSize: 16, fontWeight: .w400),
+              ),
+            ],
+          ),
+        );
+      },
+    );
+  }
+
+  Future<void> _showMyError(String error) async {
+    return showDialog<void>(
+      context: context,
+      barrierDismissible: false, // user must tap button!
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text(
+            'Error',
+            style: TextStyle(
+              fontSize: 20,
+              fontWeight: .bold,
+              color: Colors.red,
+            ),
+          ),
+          content: Text(
+            error,
+            style: TextStyle(fontSize: 16, fontWeight: .w600),
+          ),
+          actions: [
+            TextButton(
+              child: const Text('okay'),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        );
+      },
     );
   }
 }
@@ -82,16 +153,20 @@ class CustomTextFormField extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Column(
-      crossAxisAlignment: .start,
-      mainAxisSize: .min,
+      crossAxisAlignment: CrossAxisAlignment.start,
+      mainAxisSize: MainAxisSize.min,
       children: [
-        Text(label, style: TextStyle(fontSize: 16, fontWeight: .bold)),
+        Text(
+          label,
+          style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+        ),
         SizedBox(height: 5),
         TextFormField(
           controller: controller,
           validator: validator,
           decoration: InputDecoration(
-            hint: Text("Enter your name", style: TextStyle(color: Colors.grey)),
+            hintText: "Enter your name",
+            hintStyle: TextStyle(color: Colors.grey),
             fillColor: Colors.white,
             filled: true,
             focusedBorder: OutlineInputBorder(
