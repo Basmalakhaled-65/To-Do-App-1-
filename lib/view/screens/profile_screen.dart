@@ -40,6 +40,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
             SizedBox(height: 20),
             CustomTextFormField(
               label: "Full Name",
+              hint: "Enter your name",
               controller: fullName,
               validator: (value) {
                 if (value == null || value.isEmpty) {
@@ -49,40 +50,43 @@ class _ProfileScreenState extends State<ProfileScreen> {
               },
             ),
             SizedBox(height: 50),
-            MaterialButton(
-              onPressed: () async {
-                _showLoading();
-                var usrBox = Hive.box<UserModel>('User');
-                await usrBox
-                    .put("UserKey", UserModel(fullName: fullName.text))
-                    .then((Value) {
-                      Navigator.of(context).pop();
-                      Navigator.of(context).pushNamed(AppRoutes.home);
-                    })
-                    .catchError((error) {
-                      Navigator.of(context).pop();
-                      _showMyError(error);
-                    });
-              },
-              color: Color(0xff3F51B5),
-              padding: EdgeInsets.all(10),
-              minWidth: 300,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadiusGeometry.circular(12),
-              ),
-              child: Text(
-                "Create",
-                style: TextStyle(
-                  fontSize: 20,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.white,
+          MaterialButton(
+                onPressed: () async {
+                  _showLoading();
+                  var usrBox = Hive.box<UserModel>('User');
+                  await usrBox
+                      .put("UserKey", UserModel(fullName: fullName.text))
+                      .then((Value) {
+                        Navigator.of(context).pop();
+                        Navigator.of(context).pushNamed(AppRoutes.home);
+                      })
+                      .catchError((error) {
+                        Navigator.of(context).pop();
+                        _showMyError(error);
+                      });
+                },
+                color: Color(0xff3F51B5),
+                padding: EdgeInsets.all(10),
+                minWidth: 300,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadiusGeometry.circular(12),
+                ),
+                child: Text(
+                  "Create",
+                  style: TextStyle(
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.white,
+                  ),
                 ),
               ),
-            ),
           ],
+            ),
+            
+          
         ),
-      ),
-    );
+      );
+    
   }
 
   Future<void> _showLoading() async {
@@ -143,12 +147,16 @@ class CustomTextFormField extends StatelessWidget {
     super.key,
     this.controller,
     this.validator,
+    this.maxLines = 1,
     required this.label,
+    required this.hint,
   });
 
   final TextEditingController? controller;
   final String? Function(String?)? validator;
   final String label;
+  final String hint;
+  final int maxLines;
 
   @override
   Widget build(BuildContext context) {
@@ -164,8 +172,9 @@ class CustomTextFormField extends StatelessWidget {
         TextFormField(
           controller: controller,
           validator: validator,
+          maxLines: maxLines,
           decoration: InputDecoration(
-            hintText: "Enter your name",
+            hintText: hint,
             hintStyle: TextStyle(color: Colors.grey),
             fillColor: Colors.white,
             filled: true,

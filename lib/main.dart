@@ -20,7 +20,7 @@ class ToDoApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      initialRoute: AppRoutes.profile,
+      initialRoute: AppRoutes.addTask,
       routes: {
         AppRoutes.profile: (context) => ProfileScreen(),
         AppRoutes.addTask: (context) => AddTaskScreen(),
