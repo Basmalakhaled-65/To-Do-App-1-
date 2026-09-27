@@ -3,6 +3,7 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:todo_app/view/screens/profile_screen.dart';
+import 'package:todo_app/view/widgets/custom_material_button.dart';
 
 class AddTaskScreen extends StatefulWidget {
   const AddTaskScreen({super.key});
@@ -13,6 +14,9 @@ class AddTaskScreen extends StatefulWidget {
 
 class _AddTaskScreenState extends State<AddTaskScreen> {
   String dropdownButtonValue = "Pending";
+  var titleTask = TextEditingController();
+  var desTask = TextEditingController();
+  int colorSelected = 4283215696;
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -27,19 +31,23 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
       body: Padding(
         padding: const EdgeInsets.all(24),
         child: Column(
-          crossAxisAlignment: .center,
+          crossAxisAlignment: .start,
           children: [
-            CustomTextFormField(label: "Title Task", hint: "Enter task title"),
+            CustomTextFormField(
+              label: "Title Task",
+              hint: "Enter task title",
+              controller: titleTask,
+            ),
             CustomTextFormField(
               label: "Description",
               hint: "Enter task descriotion",
               maxLines: 4,
+              controller: desTask,
             ),
-            Text(
-            
-              "Status", style: TextStyle(fontSize: 16, fontWeight: .bold)),
+            Text("Status", style: TextStyle(fontSize: 16, fontWeight: .bold)),
             DropdownButton(
               value: dropdownButtonValue,
+              isExpanded: true,
 
               icon: const Icon(Icons.arrow_downward),
 
@@ -76,29 +84,22 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
               "Choose Color",
               style: TextStyle(fontSize: 16, fontWeight: .bold),
             ),
-            ChooseColorWidget(),
-            SizedBox(height: 35),
+            ChooseColorWidget(
+              clickColor: (color) {
+                color.toString();
+                colorSelected = color;
+              },
+            ),
 
-            SizedBox(
-              width: double.infinity,
-              height: 48,
-              child: ElevatedButton(
-                onPressed: () {},
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Color(0xff5965A0),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(30),
-                  ),
-                ),
-                child: Text(
-                  "Save Task",
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 14,
-                    fontWeight: FontWeight.w500,
-                  ),
-                ),
-              ),
+            SizedBox(height: 35),
+            CustomMaterialButton(
+              title: "Save Task",
+              onPressed: () {
+                ("Title: ${titleTask.text}");
+                ("Des: ${desTask.text}");
+                ("Status: $dropdownButtonValue");
+                ("Color: $colorSelected");
+              },
             ),
           ],
         ),
@@ -108,7 +109,8 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
 }
 
 class ChooseColorWidget extends StatefulWidget {
-  const ChooseColorWidget({super.key});
+  const ChooseColorWidget({super.key, required this.clickColor});
+  final void Function(int) clickColor;
 
   @override
   State<ChooseColorWidget> createState() => _ChooseColorWidgetState();
@@ -131,6 +133,7 @@ class _ChooseColorWidgetState extends State<ChooseColorWidget> {
     return InkWell(
       onTap: () {
         selectedColor = colorHex;
+        widget.clickColor(selectedColor);
         setState(() {});
       },
       child: Container(
