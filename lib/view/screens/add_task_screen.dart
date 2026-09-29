@@ -104,7 +104,7 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
                 ("Des: ${desTask.text}");
                 ("Status: $dropdownButtonValue");
                 ("Color: $colorSelected");
-                var taskBox = Hive.box<TaskModel>('cats');
+                var taskBox = Hive.box<TaskModel>('Tasks');
                 await taskBox
                     .add(
                       TaskModel(
