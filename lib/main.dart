@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:todo_app/core/app_routes.dart';
+import 'package:todo_app/data/model/task_model.dart';
 import 'package:todo_app/data/model/user_model.dart';
 import 'package:todo_app/view/screens/add_task_screen.dart';
 import 'package:todo_app/view/screens/home_screen.dart';
@@ -10,7 +11,10 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Hive.initFlutter();
   Hive.registerAdapter(UserModelAdapter());
-  Hive.openBox<UserModel>('User');
+  Hive.registerAdapter(TaskModelAdapter());
+  Hive.registerAdapter(StatusTaskAdapter());
+  await Hive.openBox<UserModel>('User');
+  await Hive.openBox<TaskModel>('Tasks');
   runApp(const ToDoApp());
 }
 

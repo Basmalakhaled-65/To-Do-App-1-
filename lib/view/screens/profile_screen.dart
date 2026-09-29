@@ -101,7 +101,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
               CircularProgressIndicator(),
               Text(
                 "Loading...",
-                style: TextStyle(fontSize: 16, fontWeight: .w400),
+                style: TextStyle(fontSize: 16, fontWeight: FontWeight.w400),
               ),
             ],
           ),
@@ -120,13 +120,13 @@ class _ProfileScreenState extends State<ProfileScreen> {
             'Error',
             style: TextStyle(
               fontSize: 20,
-              fontWeight: .bold,
+              fontWeight: FontWeight.bold,
               color: Colors.red,
             ),
           ),
           content: Text(
             error,
-            style: TextStyle(fontSize: 16, fontWeight: .w600),
+            style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
           ),
           actions: [
             TextButton(

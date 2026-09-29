@@ -2,6 +2,8 @@ import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
+import 'package:hive_flutter/hive_flutter.dart';
+import 'package:todo_app/data/model/task_model.dart';
 import 'package:todo_app/view/screens/profile_screen.dart';
 import 'package:todo_app/view/widgets/custom_material_button.dart';
 
@@ -24,14 +26,14 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
       appBar: AppBar(
         title: Text(
           "Add Task",
-          style: TextStyle(fontSize: 25, fontWeight: .bold),
+          style: TextStyle(fontSize: 25, fontWeight: FontWeight.bold),
         ),
         centerTitle: false,
       ),
       body: Padding(
         padding: const EdgeInsets.all(24),
         child: Column(
-          crossAxisAlignment: .start,
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             CustomTextFormField(
               label: "Title Task",
@@ -44,7 +46,10 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
               maxLines: 4,
               controller: desTask,
             ),
-            Text("Status", style: TextStyle(fontSize: 16, fontWeight: .bold)),
+            Text(
+              "Status",
+              style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+            ),
             DropdownButton(
               value: dropdownButtonValue,
               isExpanded: true,
@@ -60,7 +65,7 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
                   child: Text(
                     "Pending",
 
-                    style: TextStyle(fontSize: 16, fontWeight: .w500),
+                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
                   ),
                 ),
 
@@ -70,7 +75,7 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
                   child: Text(
                     "Done",
 
-                    style: TextStyle(fontSize: 16, fontWeight: .w500),
+                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
                   ),
                 ),
               ],
@@ -82,7 +87,7 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
             ),
             Text(
               "Choose Color",
-              style: TextStyle(fontSize: 16, fontWeight: .bold),
+              style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
             ),
             ChooseColorWidget(
               clickColor: (color) {
@@ -94,11 +99,29 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
             SizedBox(height: 35),
             CustomMaterialButton(
               title: "Save Task",
-              onPressed: () {
+              onPressed: () async {
                 ("Title: ${titleTask.text}");
                 ("Des: ${desTask.text}");
                 ("Status: $dropdownButtonValue");
                 ("Color: $colorSelected");
+                var taskBox = Hive.box<TaskModel>('cats');
+                await taskBox
+                    .add(
+                      TaskModel(
+                        title: titleTask.text,
+                        description: desTask.text,
+                        status: dropdownButtonValue == "Pending"
+                            ? StatusTask.pending
+                            : StatusTask.done,
+                        colorHex: colorSelected,
+                      ),
+                    )
+                    .then((value) {
+                      Navigator.of(context).pop();
+                    })
+                    .catchError((error) {
+                      Navigator.of(context).pop();
+                    });
               },
             ),
           ],
